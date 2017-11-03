@@ -42,6 +42,25 @@ def get_credentials():
     return credentials
 
 
+def format_slack_message(entry, date=None, reason='added'):
+    name = entry.get('name')
+    website = entry.get('website')
+    twitter = entry.get('twitter')
+    place = entry.get('place')
+    output_string = "Coming up! " if reason == 'coming_up' else ""
+    output_string += "*" + name + "*"
+    if website:
+        output_string += "\n" + website
+    if twitter:
+        output_string += "\n" + twitter
+    if place:
+        output_string += "\nlocation: " + place
+    if date:
+        output_string += "\ndate: " + datetime.strftime(date, "%D")
+
+    return output_string
+
+
 def main():
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
@@ -67,29 +86,21 @@ def main():
             conference_db_entry = db_actions.get_entry(con[0])
             conf_date = datetime.fromtimestamp(db_actions.format_date(con[4])) if len(con) >= 5 else None
             if db_actions.alert_for_change(con, conference_db_entry):
+                text = format_slack_message(conference_db_entry, date=conf_date, reason='added')
                 sc.api_call(
                   "chat.postMessage",
                   channel=SLACK_CHANNEL,
-                  text="*{0}*\n{1} \ndate: {2} \nplace: {3}\n twitter: {4}".format(
-                      con[0],
-                      conference_db_entry.get('website'),
-                      datetime.strftime(conf_date, "%D"),
-                      conference_db_entry.get('place'),
-                      conference_db_entry.get('twitter'),
-                  ),
+                  text=text
                 )
 
             db_actions.update_entry(con)
 
         if db_actions.should_plan(conference_db_entry, conf_date):
+            text = format_slack_message(conference_db_entry, date=conf_date, reason='coming_up')
             sc.api_call(
                 "chat.postMessage",
                 channel=SLACK_CHANNEL,
-                text="Coming up in four months or so! \n*{0}* \n{1} \n{2}".format(
-                    con[0],
-                    conference_db_entry.get('website'),
-                    datetime.strftime(conf_date, "%D")
-                ),
+                text=text
             )
 
 

@@ -1,12 +1,12 @@
 import os
-from slackclient import SlackClient
-from credentials.slack import *
 import httplib2
 from datetime import datetime
 from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
+from slackclient import SlackClient
+from credentials.settings import *
 import db_actions
 
 
@@ -22,7 +22,7 @@ CLIENT_SECRET_FILE = 'credentials/client_secret.json'
 APPLICATION_NAME = 'Google Sheets API Python Quickstart'
 
 
-sc = SlackClient(slack_token)
+sc = SlackClient(SLACK_TOKEN)
 
 
 def get_credentials():
@@ -50,7 +50,7 @@ def main():
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
 
-    spreadsheetId = '1IIGoTbp2rB4UZGzPRTmz941AZq4QCw48a2jkD_l7Lt4'
+    spreadsheetId = SPREADSHEET_ID
 
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range="A:Z").execute()
@@ -69,12 +69,13 @@ def main():
             if db_actions.alert_for_change(con, conference_db_entry):
                 sc.api_call(
                   "chat.postMessage",
-                  channel="#test",
-                  text="Updated information: *{0}* \n{1} \non {2} \nat {3}".format(
+                  channel=SLACK_CHANNEL,
+                  text="*{0}*\n{1} \ndate: {2} \nplace: {3}\n twitter: {4}".format(
                       con[0],
                       conference_db_entry.get('website'),
                       datetime.strftime(conf_date, "%D"),
-                      conference_db_entry.get('place')
+                      conference_db_entry.get('place'),
+                      conference_db_entry.get('twitter'),
                   ),
                 )
 
@@ -83,7 +84,7 @@ def main():
         if db_actions.should_plan(conference_db_entry, conf_date):
             sc.api_call(
                 "chat.postMessage",
-                channel="#test",
+                channel=SLACK_CHANNEL,
                 text="Coming up in four months or so! \n*{0}* \n{1} \n{2}".format(
                     con[0],
                     conference_db_entry.get('website'),

@@ -3,7 +3,6 @@ from tinydb import TinyDB, Query
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
-
 db = TinyDB('db.json')
 conf_table = db.table('conferences')
 alerted_table = db.table('alerted')

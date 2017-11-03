@@ -6,7 +6,7 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 from slackclient import SlackClient
-from settings import *
+from credentials.settings import *
 import db_actions
 
 
@@ -70,7 +70,7 @@ def main():
                 sc.api_call(
                   "chat.postMessage",
                   channel=SLACK_CHANNEL,
-                  text="*{0}*\nis happening\n{1} \ndate: {2} \nplace: {3}\n twitter: {4}".format(
+                  text="*{0}*\n{1} \ndate: {2} \nplace: {3}\n twitter: {4}".format(
                       con[0],
                       conference_db_entry.get('website'),
                       datetime.strftime(conf_date, "%D"),

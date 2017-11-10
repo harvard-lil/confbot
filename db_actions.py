@@ -37,6 +37,7 @@ def create_entry_object(confrow):
 
 
 def create_entry(confrow):
+    print('creating entry for:', confrow)
     entry = create_entry_object(confrow)
     conf_table.insert(entry)
     return entry

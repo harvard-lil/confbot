@@ -1,1 +1,1 @@
-clock: python job.py
+clock: python scheduler.py

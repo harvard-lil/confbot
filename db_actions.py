@@ -1,6 +1,6 @@
 import dateutil.parser as dparser
 from tinydb import TinyDB, Query
-from datetime import date
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 db = TinyDB('db.json')
@@ -44,7 +44,15 @@ def create_entry(confrow):
 
 
 def alert_for_change(conf_gs, conf_db):
-    return len(conf_gs) > 4 and conf_db.get('date') != format_date(conf_gs[4])
+    # if month or day is not the same, alert for change
+    if len(conf_gs) <= 4:
+        # date does not exist, return out
+        return False
+
+    timestamp_1 = datetime.fromtimestamp(format_date(conf_gs[4]))
+    timestamp_2 = datetime.fromtimestamp(conf_db.get('date'))
+
+    return timestamp_1.month != timestamp_2.month or timestamp_1.day != timestamp_2.day
 
 
 def update_entry(confrow):

@@ -1,3 +1,5 @@
+ENV = 'dev'
+
 # GOOGLE
 DISCOVERY_URL = 'https://sheets.googleapis.com/$discovery/rest?'
 DISCOVERY_URL_VERSION = 'version=v4'

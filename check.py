@@ -1,3 +1,4 @@
+import os
 import httplib2
 from datetime import datetime
 from apiclient import discovery
@@ -7,6 +8,19 @@ from oauth2client.file import Storage
 from slackclient import SlackClient
 from settings import *
 import db_actions
+os.path.join('credentials', 'sheets.googleapis.com-python-quickstart.json')
+
+
+# set keys for heroku
+if os.environ.get('ENV', '') == 'heroku':
+    DISCOVERY_URL = os.environ.get('DISCOVERY_URL')
+    DISCOVERY_URL_VERSION = os.environ.get('DISCOVERY_URL_VERSION')
+    SCOPES = os.environ.get('SCOPES')
+    SPREADSHEET_ID = os.environ.get('SPREADSHEET_ID')
+    CLIENT_SECRET_FILE = os.environ.get('CLIENT_SECRET_FILE')
+    SLACK_CHANNEL = os.environ.get('SLACK_CHANNEL')
+    SLACK_TOKEN = os.environ.get('SLACK_TOKEN')
+    APPLICATION_NAME = os.environ.get('APPLICATION_NAME')
 
 try:
     import argparse
@@ -18,7 +32,13 @@ sc = SlackClient(SLACK_TOKEN)
 
 
 def get_credentials():
-    store = Storage(GDOC_CREDENTIAL_PATH)
+    home_dir = os.path.expanduser('~')
+    credential_dir = os.path.join(home_dir, '.credentials')
+    if not os.path.exists(credential_dir):
+        os.makedirs(credential_dir)
+    credential_path = os.path.join(credential_dir, 'sheets.googleapis.com-python-quickstart.json')
+
+    store = Storage(credential_path)
     credentials = store.get()
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
@@ -27,7 +47,7 @@ def get_credentials():
             credentials = tools.run_flow(flow, store, flags)
         else:
             credentials = tools.run(flow, store)
-        print('Storing credentials to ' + GDOC_CREDENTIAL_PATH)
+        print('Storing credentials to ' + credential_path)
     return credentials
 
 

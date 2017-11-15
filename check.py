@@ -1,7 +1,7 @@
 import os
 import httplib2
 from datetime import datetime
-from apiclient import discovery
+from googleapiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage

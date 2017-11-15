@@ -100,7 +100,6 @@ def main():
             text = format_slack_message(conference_db_entry, date=conf_date, reason='coming_up')
             sc.api_call("chat.postMessage", text=text, **kwargs)
 
-
 if __name__ == '__main__':
     main()
 

@@ -6,10 +6,7 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 from slackclient import SlackClient
-from settings import *
 import db_actions
-os.path.join('credentials', 'sheets.googleapis.com-python-quickstart.json')
-
 
 # set keys for heroku
 if os.environ.get('ENV', '') == 'heroku':
@@ -21,6 +18,9 @@ if os.environ.get('ENV', '') == 'heroku':
     SLACK_CHANNEL = os.environ.get('SLACK_CHANNEL')
     SLACK_TOKEN = os.environ.get('SLACK_TOKEN')
     APPLICATION_NAME = os.environ.get('APPLICATION_NAME')
+else:
+    # set keys everywhere else
+    from settings import *
 
 try:
     import argparse
